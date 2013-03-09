@@ -1,0 +1,83 @@
+#!/bin/bash
+#
+# minechand        This shell script takes care of starting and stopping
+#               the minechand IRC client daemon.
+#
+# chkconfig: - 90 20
+# description: minechand is IRC client daemon
+# processname: minechand
+# pidfile: /var/run/minechand/minechand.pid
+### BEGIN INIT INFO
+# Provides: minechand
+# Required-Start: $local_fs $network
+# Required-Stop: $local_fs $network
+# Short-Description: start and stop the minechand IRC daemon
+# Description: minechand is an IRC daemon
+### END INIT INFO
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+prog=minechand
+RETVAL=0
+
+mkdir -p /var/run/minechand /var/log/minechand 2>/dev/null
+chown minechan /var/run/minechand /var/log/minechand
+
+command=/opt/minechand/bin/minechand
+
+start() {
+        echo -n $"Starting $prog: "
+        daemon $command
+        RETVAL=$?
+        echo
+        [ $RETVAL = 0 ] && touch /var/lock/subsys/minechand
+        return $RETVAL
+}
+
+stop() {
+        echo -n $"Stopping $prog: "
+        killproc $prog
+        RETVAL=$?
+        echo
+        [ $RETVAL = 0 ] && rm -f /var/lock/subsys/minechand
+}
+
+reload() {
+        echo -n $"Reloading $prog: "
+        killproc $prog -HUP
+        RETVAL=$?
+        echo
+}
+
+# See how we were called.
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  status)
+    status minechand
+        RETVAL=$?
+        ;;
+  restart)
+        stop
+        start
+        ;;
+  reload)
+        reload
+        ;;
+  condrestart)
+        if [ -f /var/run/minechand/minechand.pid ] ; then
+                stop
+                start
+        fi
+        ;;
+  *)
+        echo $"Usage: $prog {start|stop|restart|reload|condrestart|status|help}"
+        exit 1
+esac
+
+exit $RETVAL

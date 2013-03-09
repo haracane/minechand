@@ -1,0 +1,6 @@
+cwd=$(cd $(dirname $0)/..; pwd)
+
+cd $cwd
+
+sh ./script/chef-solo-recipe.sh minechand
+if [ $? != 0 ]; then exit 1; fi
