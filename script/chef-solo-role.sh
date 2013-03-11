@@ -1,5 +1,4 @@
 cwd=$(cd $(dirname $0)/..; pwd)
-cd $cwd
 
 while true; do
   if [ "$1" = --list ]; then
@@ -14,15 +13,18 @@ done
 
 role=$1
 
-sh ./script/update-chef.sh
-if [ $? != 0 ]; then exit 1; fi
-
-role_path=/var/chef-repo/roles/$role.json
+role_path=$cwd/chef-repo/roles/$role.json
 
 if [ ! -f $role_path ]; then
-  echo "(ERROR) $role_path does not exist"
+  echo "(ERROR) $role_path does not exist" >&2
   exit 1
 fi
 
-sudo chef-solo -c /tmp/solo.rb -j $role_path
+solorb=$(mktemp /tmp/solorb.XXXXXX)
+
+sh ./script/print-solo-rb.sh > $solorb
+
+sudo chef-solo -c $solorb -o role[$role]
 if [ $? != 0 ]; then exit 1; fi
+
+rm $solorb
