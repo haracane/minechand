@@ -26,7 +26,7 @@ solorb=$(mktemp /tmp/solorb.XXXXXX)
 
 sh ./script/print-solo-rb.sh > $solorb
 
-sudo chef-solo -c $solorb -o recipe[$recipe]
+chef-solo -c $solorb -o recipe[$recipe]
 if [ $? != 0 ]; then exit 1; fi
 
 rm $solorb
