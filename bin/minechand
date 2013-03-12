@@ -1,7 +1,7 @@
 source $(dirname $0)/../conf/minechand-env.sh
 
 pid_path_option="--pid-path /var/run/minechand.pid"
-log_path=/var/log/minechand/minechan.log
+log_path=/var/log/minechand/minechand.log
 
 while true; do
   if [ "$1" = --pid-path ]; then
